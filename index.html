@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>BiRAGAS · Causaly Competitive Analysis</title>
+<meta name="description" content="BiRAGAS Revenue Streams Master Presentation — 62 slides · five streams · one causal operating system · $618.8M by 2030.">
+
+<style>
+  html, body, #root { height: 100%; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: #0A0908;
+    color: #F5F0E8;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior-y: contain;
+  }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0A0908; }
+  ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #333; }
+
+  #boot {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: #0A0908; color: #F5F0E8; z-index: 0;
+  }
+  #boot .kicker { font-size: 10px; letter-spacing: 0.3em; color: #888; font-family: monospace; }
+  #boot .logo { font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-top: 14px; text-align: center; max-width: 92vw; color: #F5F0E8; }
+  #boot .spin { margin-top: 30px; width: 22px; height: 22px; border: 2px solid #333; border-top-color: #C8A560; border-radius: 50%; animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Top bar */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 56px;
+    background: rgba(10, 9, 8, 0.9);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid #1F1F1F;
+    display: flex; align-items: center;
+    padding: 0 24px; gap: 14px;
+    z-index: 100;
+    padding-top: env(safe-area-inset-top, 0px);
+    height: calc(56px + env(safe-area-inset-top, 0px));
+  }
+  .hamburger { background: transparent; border: 1px solid #333; width: 40px; height: 40px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; flex-shrink: 0; }
+  .hamburger:active { background: #1A1A1A; }
+  .tb-title { font-size: 13px; font-weight: 700; letter-spacing: -0.2px; color: #F5F0E8; min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tb-kicker { font-size: 9px; color: #888; font-family: monospace; letter-spacing: 0.2em; }
+  .chip { display: inline-flex; align-items: center; padding: 5px 10px; background: #161616; border: 1px solid #2A2A2A; font-family: monospace; font-size: 10px; color: #C8C4BC; border-radius: 3px; letter-spacing: 0.06em; flex-shrink: 0; }
+  .audio-btn { background: transparent; color: #C8C4BC; border: 1px solid #333; padding: 7px 12px; font-family: monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; border-radius: 4px; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .audio-btn.on { background: var(--accent, #C8A560); color: #0A0908; border-color: var(--accent, #C8A560); }
+
+  /* Drawer */
+  .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 300; opacity: 0; pointer-events: none; transition: opacity 0.22s ease; }
+  .drawer-overlay.open { opacity: 1; pointer-events: auto; }
+  .drawer { position: fixed; top: 0; left: 0; bottom: 0; width: min(86vw, 380px); background: #0F0F0F; z-index: 310; transform: translateX(-100%); transition: transform 0.28s cubic-bezier(0.4,0,0.2,1); display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0,0,0,0.8); }
+  .drawer.open { transform: translateX(0); }
+  .drawer-head { padding: 16px 20px; border-bottom: 1px solid #1F1F1F; display: flex; justify-content: space-between; align-items: center; padding-top: max(16px, env(safe-area-inset-top, 16px)); }
+  .drawer-list { flex: 1; overflow-y: auto; padding: 6px 0; padding-bottom: max(20px, env(safe-area-inset-bottom, 20px)); }
+  .drawer-item { display: block; width: 100%; background: transparent; border: none; border-left: 3px solid transparent; padding: 12px 18px; text-align: left; cursor: pointer; font-family: inherit; transition: background 0.12s ease; }
+  .drawer-item:active { background: #1A1A1A; }
+  .drawer-stream-header { padding: 14px 18px 6px; font-size: 9px; letter-spacing: 0.3em; font-family: monospace; font-weight: 700; }
+
+  /* Slide container */
+  .slide {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: calc(80px + env(safe-area-inset-top, 0px)) 80px 140px;
+    box-sizing: border-box;
+    display: flex; flex-direction: column;
+  }
+  .slide-kicker { font-size: 10px; letter-spacing: 0.3em; color: var(--accent, #C8A560); font-family: monospace; font-weight: 700; margin-bottom: 14px; text-transform: uppercase; }
+  .slide-title { font-size: 38px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.1; margin: 0 0 14px; color: #F5F0E8; }
+  .slide-subtitle { font-size: 18px; color: #C8C4BC; line-height: 1.45; font-style: italic; margin-bottom: 24px; max-width: 920px; }
+  .slide-body { font-size: 15px; line-height: 1.65; color: #C8C4BC; max-width: 880px; margin-bottom: 24px; white-space: pre-wrap; }
+
+  /* Cover kind */
+  .slide.cover { justify-content: center; }
+  .slide.cover .slide-title { font-size: 64px; line-height: 1.05; margin-bottom: 18px; }
+  .slide.cover .slide-subtitle { font-size: 20px; max-width: 980px; }
+  .big-number { font-size: 96px; font-weight: 800; letter-spacing: -2px; color: var(--accent, #C8A560); margin: 30px 0 8px; line-height: 1; }
+  .big-label { font-size: 13px; font-family: monospace; color: #888; letter-spacing: 0.06em; max-width: 880px; line-height: 1.5; }
+
+  /* Manifesto kind */
+  .slide.manifesto { justify-content: center; }
+  .slide.manifesto .slide-title { font-size: 56px; line-height: 1.1; max-width: 1100px; }
+  .slide.manifesto .slide-subtitle { font-size: 22px; max-width: 980px; color: #E8E4DC; line-height: 1.5; }
+
+  /* KPI grid */
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 22px 0; max-width: 1200px; }
+  .kpi { background: #0F0F0F; border: 1px solid #1F1F1F; border-top: 3px solid var(--accent, #C8A560); padding: 22px 18px; }
+  .kpi-k { font-size: 30px; font-weight: 700; color: #F5F0E8; letter-spacing: -0.6px; line-height: 1.1; }
+  .kpi-v { font-size: 11px; color: #888; margin-top: 8px; font-family: monospace; text-transform: uppercase; letter-spacing: 0.06em; line-height: 1.4; }
+
+  /* Tables */
+  .tbl-wrap { margin: 22px 0; border: 1px solid #1F1F1F; background: #0F0F0F; max-width: 1300px; }
+  .tbl-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tbl { border-collapse: collapse; width: 100%; min-width: 100%; }
+  .tbl th { background: #161616; padding: 14px 16px; text-align: left; font-size: 10px; letter-spacing: 0.18em; color: #888; text-transform: uppercase; font-family: monospace; font-weight: 700; border-bottom: 2px solid var(--accent, #C8A560); white-space: nowrap; }
+  .tbl td { padding: 12px 16px; font-size: 13px; color: #E8E4DC; border-bottom: 1px solid #1A1A1A; vertical-align: top; line-height: 1.45; }
+  .tbl td:first-child { color: var(--accent, #C8A560); font-weight: 700; white-space: nowrap; }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl .total-row td { background: #161616; font-weight: 700; border-top: 2px solid var(--accent, #C8A560); }
+
+  /* Chart */
+  .chart-card { background: #0F0F0F; border: 1px solid #1F1F1F; padding: 26px; margin: 22px 0; max-width: 1100px; }
+  .chart-title { font-size: 11px; letter-spacing: 0.22em; color: #888; text-transform: uppercase; font-family: monospace; margin-bottom: 16px; font-weight: 700; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 14px; }
+  .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: #C8C4BC; font-family: monospace; }
+  .legend-dot { width: 14px; height: 14px; display: inline-block; border-radius: 2px; flex-shrink: 0; }
+
+  /* Bullet list */
+  .bullet-list { list-style: none; padding: 0; margin: 22px 0; max-width: 1100px; }
+  .bullet-list li { padding: 14px 0 14px 36px; position: relative; font-size: 15px; line-height: 1.55; color: #E8E4DC; border-bottom: 1px solid #1A1A1A; }
+  .bullet-list li:last-child { border-bottom: none; }
+  .bullet-list li::before { content: "→"; position: absolute; left: 8px; top: 14px; color: var(--accent, #C8A560); font-weight: 700; font-size: 18px; }
+
+  /* Pill nav */
+  .pill-nav {
+    position: fixed; left: 14px; right: 14px;
+    bottom: max(20px, calc(env(safe-area-inset-bottom, 0px) + 14px));
+    display: flex; gap: 10px;
+    z-index: 200;
+    pointer-events: none;
+  }
+  .pill-nav button {
+    pointer-events: auto; flex: 1;
+    height: 58px; border-radius: 29px;
+    border: 1px solid #2A2A2A;
+    background: rgba(15,15,15,0.96);
+    color: #F5F0E8;
+    font-family: monospace; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    cursor: pointer;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 16px 44px rgba(0,0,0,0.6);
+    transition: transform 0.12s ease;
+  }
+  .pill-nav button:active { transform: scale(0.97); }
+  .pill-nav button.next { background: var(--accent, #C8A560); color: #0A0908; border-color: var(--accent, #C8A560); }
+  .pill-nav button:disabled { opacity: 0.35; cursor: default; }
+
+  @media (min-width: 901px) {
+    .pill-nav { left: auto; right: 32px; width: 320px; }
+  }
+
+  /* Mobile */
+  @media (max-width: 900px) {
+    .topbar { padding: 0 14px; gap: 10px; }
+    .tb-title { font-size: 12px; }
+    .tb-kicker { display: none; }
+    .slide { padding: calc(72px + env(safe-area-inset-top, 0px)) 18px 180px; }
+    .slide-title { font-size: 24px; }
+    .slide-subtitle { font-size: 14px; }
+    .slide-body { font-size: 14px; }
+    .slide.cover .slide-title { font-size: 36px; }
+    .slide.cover .slide-subtitle { font-size: 15px; }
+    .big-number { font-size: 56px; }
+    .slide.manifesto .slide-title { font-size: 30px; line-height: 1.15; }
+    .slide.manifesto .slide-subtitle { font-size: 15px; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .kpi { padding: 14px 10px; }
+    .kpi-k { font-size: 20px; }
+    .kpi-v { font-size: 9px; margin-top: 5px; }
+    .chart-card { padding: 14px 12px; margin: 16px 0; }
+    .chart-title { font-size: 10px; margin-bottom: 10px; }
+    .legend-item { font-size: 10px; }
+    .tbl th { padding: 8px 10px; font-size: 9px; }
+    .tbl td { padding: 8px 10px; font-size: 11.5px; }
+    .bullet-list li { font-size: 13px; padding: 11px 0 11px 30px; }
+    .audio-btn { padding: 6px 10px; font-size: 9px; }
+    .audio-btn span:last-child { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="boot">
+  <div class="kicker">BIRAGAS · MMXXVI</div>
+  <div class="logo">CAUSALY · COMPETITIVE ANALYSIS</div>
+  <div class="spin"></div>
+</div>
+
+<div id="root"></div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react,env">
+const { useState, useEffect, useRef } = React;
+const DATA = window.__DECK_DATA__;
+const slides = DATA.slides;
+
+const STREAM_NAMES = {
+  intro:    "Intro",
+  causaly:  "Causaly",
+  thesis:   "The Causal Distinction",
+  platform: "Platform Stack",
+  compare:  "Head-to-Head",
+  threat:   "Threat & Watch-List",
+  close:    "Posture & Close",
+};
+const STREAM_COLORS = {
+  intro: "#C8A560", causaly: "#0EA5E9", thesis: "#DC2626",
+  platform: "#3B82F6", compare: "#10B981", threat: "#EF4444", close: "#1E40AF",
+};
+
+// ─── CHART COMPONENTS ───
+function BarH({ data, title, unit }) {
+  const max = Math.max(...data.map(d => d.value)) * 1.05;
+  const W = 760, H = 38 * data.length + 30, leftPad = 230;
+  return (
+    <div className="chart-card">
+      {title && <div className="chart-title">{title}</div>}
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMinYMin meet" style={{ width: "100%", height: "auto", display: "block" }}>
+        {data.map((d, i) => {
+          const y = i * 38 + 12;
+          const barW = Math.max(2, (d.value / max) * (W - leftPad - 30));
+          const val = typeof d.value === "number" ? (d.value < 10 ? +d.value.toFixed(2) : d.value.toLocaleString()) : d.value;
+          return (
+            <g key={i}>
+              <text x={leftPad - 14} y={y + 19} textAnchor="end" fill="#C8C4BC" fontSize="12" fontWeight="500">{d.label}</text>
+              <rect x={leftPad} y={y + 4} width={barW} height={24} fill={d.color || "#3B82F6"} rx="2" />
+              <text x={leftPad + barW + 8} y={y + 21} fill="#F5F0E8" fontSize="12" fontFamily="monospace" fontWeight="700">{val}{unit ? unit : ""}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+function BarV({ data, title, unit }) {
+  const max = Math.max(...data.map(d => d.value)) * 1.15;
+  const W = 720, H = 320, padBottom = 50, padTop = 30, padX = 40;
+  const barW = (W - padX * 2) / data.length;
+  return (
+    <div className="chart-card">
+      {title && <div className="chart-title">{title}</div>}
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMinYMin meet" style={{ width: "100%", height: "auto", display: "block" }}>
+        {data.map((d, i) => {
+          const h = ((d.value / max) * (H - padTop - padBottom));
+          const x = padX + i * barW + barW * 0.15;
+          const w = barW * 0.7;
+          const y = H - padBottom - h;
+          return (
+            <g key={i}>
+              <rect x={x} y={y} width={w} height={h} fill={d.color || "#3B82F6"} rx="2" />
+              <text x={x + w / 2} y={y - 8} textAnchor="middle" fill="#F5F0E8" fontSize="12" fontFamily="monospace" fontWeight="700">{d.value}{unit ? unit : ""}</text>
+              <text x={x + w / 2} y={H - padBottom + 20} textAnchor="middle" fill="#C8C4BC" fontSize="11" fontFamily="-apple-system,sans-serif" fontWeight="600">{d.label}</text>
+            </g>
+          );
+        })}
+        <line x1={padX} y1={H - padBottom} x2={W - padX} y2={H - padBottom} stroke="#333" strokeWidth="1" />
+      </svg>
+    </div>
+  );
+}
+
+function BarVGrouped({ x, series, title }) {
+  const all = series.flatMap(s => s.data);
+  const max = Math.max(...all) * 1.18;
+  const W = 760, H = 360, padBottom = 60, padTop = 20, padX = 40;
+  const groupW = (W - padX * 2) / x.length;
+  const barW = groupW * 0.85 / series.length;
+  return (
+    <div className="chart-card">
+      {title && <div className="chart-title">{title}</div>}
+      <div className="legend">
+        {series.map((s, i) => <div key={i} className="legend-item"><span className="legend-dot" style={{ background: s.color }}></span>{s.label}</div>)}
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMinYMin meet" style={{ width: "100%", height: "auto", display: "block" }}>
+        {x.map((xLabel, gi) => {
+          const gx = padX + gi * groupW + groupW * 0.075;
+          return (
+            <g key={gi}>
+              {series.map((s, si) => {
+                const v = s.data[gi] || 0;
+                const h = (v / max) * (H - padTop - padBottom);
+                const bx = gx + si * barW;
+                const by = H - padBottom - h;
+                return <rect key={si} x={bx} y={by} width={barW - 2} height={h} fill={s.color} rx="1" />;
+              })}
+              <text x={gx + groupW * 0.42} y={H - padBottom + 22} textAnchor="middle" fill="#C8C4BC" fontSize="11" fontFamily="monospace" fontWeight="600">{xLabel}</text>
+            </g>
+          );
+        })}
+        <line x1={padX} y1={H - padBottom} x2={W - padX} y2={H - padBottom} stroke="#333" strokeWidth="1" />
+      </svg>
+    </div>
+  );
+}
+
+function LineChart({ x, series, title }) {
+  const all = series.flatMap(s => s.data);
+  const max = Math.max(...all) * 1.15;
+  const W = 760, H = 360, padBottom = 50, padTop = 30, padX = 50;
+  const innerW = W - padX * 2, innerH = H - padTop - padBottom;
+  const stepX = innerW / Math.max(1, x.length - 1);
+  return (
+    <div className="chart-card">
+      {title && <div className="chart-title">{title}</div>}
+      <div className="legend">
+        {series.map((s, i) => <div key={i} className="legend-item"><span className="legend-dot" style={{ background: s.color, width: 18, height: 3, borderRadius: 1 }}></span>{s.label}</div>)}
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMinYMin meet" style={{ width: "100%", height: "auto", display: "block" }}>
+        {[0, 0.25, 0.5, 0.75, 1].map((t, i) => {
+          const y = padTop + innerH * t;
+          return (
+            <g key={i}>
+              <line x1={padX} y1={y} x2={W - padX} y2={y} stroke="#1F1F1F" strokeWidth="1" />
+              <text x={padX - 8} y={y + 4} textAnchor="end" fill="#666" fontSize="10" fontFamily="monospace">{Math.round(max * (1 - t))}</text>
+            </g>
+          );
+        })}
+        {x.map((xLabel, i) => (
+          <text key={i} x={padX + i * stepX} y={H - padBottom + 20} textAnchor="middle" fill="#C8C4BC" fontSize="11" fontFamily="monospace" fontWeight="600">{xLabel}</text>
+        ))}
+        {series.map((s, si) => {
+          const points = s.data.map((v, i) => [padX + i * stepX, padTop + innerH * (1 - v / max)]);
+          const path = points.map((p, i) => `${i === 0 ? "M" : "L"} ${p[0]} ${p[1]}`).join(" ");
+          const last = points[points.length - 1];
+          return (
+            <g key={si}>
+              <path d={path} stroke={s.color} strokeWidth="2.5" fill="none" />
+              {points.map((p, i) => <circle key={i} cx={p[0]} cy={p[1]} r="4" fill={s.color} stroke="#0A0908" strokeWidth="2" />)}
+              <text x={last[0] + 8} y={last[1] + 4} fill={s.color} fontSize="11" fontFamily="monospace" fontWeight="700">{s.data[s.data.length - 1]}</text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+function renderChart(chart) {
+  if (!chart) return null;
+  if (chart.type === "bar-h") return <BarH data={chart.data} title={chart.title} unit={chart.unit} />;
+  if (chart.type === "bar-v") return <BarV data={chart.data} title={chart.title} unit={chart.unit} />;
+  if (chart.type === "bar-v-grouped") return <BarVGrouped x={chart.x} series={chart.series} title={chart.title} />;
+  if (chart.type === "line") return <LineChart x={chart.x} series={chart.series} title={chart.title} />;
+  return null;
+}
+
+// ─── APP ───
+function App() {
+  const [idx, setIdx] = useState(0);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [audioOn, setAudioOn] = useState(false);
+  const touchRef = useRef(null);
+  const audioRef = useRef(null);
+  const slideRef = useRef(null);
+
+  const cur = slides[idx];
+  const accent = cur.color;
+
+  useEffect(() => { document.body.style.overflow = drawerOpen ? "hidden" : ""; return () => { document.body.style.overflow = ""; }; }, [drawerOpen]);
+  useEffect(() => { const b = document.getElementById("boot"); if (b) b.style.display = "none"; }, []);
+  useEffect(() => { if (slideRef.current) slideRef.current.scrollTop = 0; window.scrollTo(0, 0); }, [idx]);
+
+  // Audio sync
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a) return;
+    a.pause();
+    if (!audioOn) return;
+    a.src = `audio/${cur.id}.mp3`;
+    a.load();
+    const p = a.play();
+    if (p) p.catch(() => {});
+  }, [idx, audioOn]);
+
+  // Keyboard
+  useEffect(() => {
+    const h = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") { e.preventDefault(); setIdx(i => Math.min(slides.length - 1, i + 1)); }
+      else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); setIdx(i => Math.max(0, i - 1)); }
+      else if (e.key.toLowerCase() === "m") setAudioOn(v => !v);
+      else if (e.key.toLowerCase() === "n") setDrawerOpen(v => !v);
+      else if (e.key === "Escape") setDrawerOpen(false);
+      else if (e.key === "Home") setIdx(0);
+      else if (e.key === "End") setIdx(slides.length - 1);
+    };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, []);
+
+  const onTouchStart = (e) => { touchRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() }; };
+  const onTouchEnd = (e) => {
+    const s = touchRef.current; if (!s) return;
+    const dx = e.changedTouches[0].clientX - s.x;
+    const dy = e.changedTouches[0].clientY - s.y;
+    const dt = Date.now() - s.t;
+    touchRef.current = null;
+    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.4 && dt < 700) {
+      if (dx < 0) setIdx(i => Math.min(slides.length - 1, i + 1));
+      else setIdx(i => Math.max(0, i - 1));
+    }
+  };
+
+  // Group slides by stream for drawer
+  const groups = [];
+  let lastStream = null;
+  slides.forEach((s, i) => {
+    if (s.stream !== lastStream) {
+      groups.push({ stream: s.stream, name: STREAM_NAMES[s.stream], color: STREAM_COLORS[s.stream], slides: [] });
+      lastStream = s.stream;
+    }
+    groups[groups.length - 1].slides.push({ idx: i, slide: s });
+  });
+
+  // Render slide content
+  const renderSlide = () => {
+    return (
+      <div className={`slide ${cur.kind}`} ref={slideRef} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} style={{ touchAction: "pan-y" }}>
+        {cur.kicker && <div className="slide-kicker">{cur.kicker}</div>}
+        {cur.title && <h1 className="slide-title">{cur.title}</h1>}
+        {cur.subtitle && <div className="slide-subtitle">{cur.subtitle}</div>}
+        {cur.body && <div className="slide-body">{cur.body}</div>}
+
+        {cur.kind === "cover" && cur.big_number && (
+          <div>
+            <div className="big-number">{cur.big_number}</div>
+            {cur.big_label && <div className="big-label">{cur.big_label}</div>}
+          </div>
+        )}
+
+        {cur.kpis && cur.kpis.length > 0 && (
+          <div className="kpi-grid">
+            {cur.kpis.map((k, i) => (
+              <div key={i} className="kpi">
+                <div className="kpi-k">{k.k}</div>
+                <div className="kpi-v">{k.v}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {cur.chart && renderChart(cur.chart)}
+
+        {cur.table && (
+          <div className="tbl-wrap">
+            <div className="tbl-scroll">
+              <table className="tbl">
+                {cur.table.title && (
+                  <caption style={{ fontSize: 11, letterSpacing: "0.2em", color: "#888", textTransform: "uppercase", fontFamily: "monospace", padding: "12px 16px", textAlign: "left", fontWeight: 700 }}>
+                    {cur.table.title}
+                  </caption>
+                )}
+                <thead>
+                  <tr>{cur.table.headers.map((h, i) => <th key={i}>{h}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {cur.table.rows.map((row, ri) => {
+                    const isTotal = String(row[0]).toUpperCase().includes("TOTAL");
+                    return (
+                      <tr key={ri} className={isTotal ? "total-row" : ""}>
+                        {row.map((cell, ci) => (
+                          <td key={ci}>{typeof cell === "number" ? cell.toLocaleString() : cell}</td>
+                        ))}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {cur.bullets && cur.bullets.length > 0 && (
+          <ul className="bullet-list">
+            {cur.bullets.map((b, i) => <li key={i}>{b}</li>)}
+          </ul>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div style={{ "--accent": accent, minHeight: "100vh", background: "#0A0908" }}>
+      {/* TOP BAR */}
+      <div className="topbar">
+        <button className="hamburger" onClick={() => setDrawerOpen(true)} aria-label="Open menu">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="4" width="16" height="2" fill="#F5F0E8" rx="1"/>
+            <rect x="2" y="9" width="16" height="2" fill="#F5F0E8" rx="1"/>
+            <rect x="2" y="14" width="16" height="2" fill="#F5F0E8" rx="1"/>
+          </svg>
+        </button>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="tb-kicker">{STREAM_NAMES[cur.stream]} · {DATA.title}</div>
+          <div className="tb-title">{cur.title || cur.kicker}</div>
+        </div>
+        <button className={`audio-btn ${audioOn ? "on" : ""}`} onClick={() => setAudioOn(v => !v)} aria-label={audioOn ? "Mute" : "Play"}>
+          <span style={{ fontSize: 14 }}>{audioOn ? "🔊" : "🔇"}</span>
+          <span>{audioOn ? "ON" : "OFF"}</span>
+        </button>
+        <span className="chip">{String(idx + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}</span>
+      </div>
+
+      {/* DRAWER */}
+      <div className={`drawer-overlay ${drawerOpen ? "open" : ""}`} onClick={() => setDrawerOpen(false)} />
+      <div className={`drawer ${drawerOpen ? "open" : ""}`}>
+        <div className="drawer-head">
+          <div>
+            <div style={{ fontSize: 9, letterSpacing: "0.25em", color: "#888", textTransform: "uppercase", fontFamily: "monospace", marginBottom: 4 }}>NAVIGATION</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: "#F5F0E8" }}>{slides.length} slides</div>
+          </div>
+          <button onClick={() => setDrawerOpen(false)} aria-label="Close" style={{ background: "transparent", border: "1px solid #333", color: "#F5F0E8", width: 36, height: 36, borderRadius: 4, cursor: "pointer", fontSize: 22, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>×</button>
+        </div>
+        <div className="drawer-list">
+          {groups.map((g, gi) => (
+            <div key={gi}>
+              <div className="drawer-stream-header" style={{ color: g.color }}>
+                {g.name.toUpperCase()}
+              </div>
+              {g.slides.map(({ idx: si, slide }) => {
+                const active = si === idx;
+                return (
+                  <button key={si} className="drawer-item" onClick={() => { setIdx(si); setDrawerOpen(false); }} style={{ background: active ? "#1A1A1A" : "transparent", borderLeftColor: active ? slide.color : "transparent" }}>
+                    <div style={{ fontSize: 9, fontFamily: "monospace", color: active ? slide.color : "#666", letterSpacing: "0.1em", marginBottom: 3, fontWeight: 700 }}>
+                      {String(si + 1).padStart(2, "0")} · {slide.kind.toUpperCase()}
+                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: active ? "#F5F0E8" : "#C8C4BC", letterSpacing: "-0.2px", lineHeight: 1.3 }}>{slide.title || slide.kicker}</div>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {renderSlide()}
+
+      <audio ref={audioRef} preload="auto" />
+
+      {/* PILL NAV */}
+      <div className="pill-nav">
+        <button onClick={() => setIdx(i => Math.max(0, i - 1))} disabled={idx === 0}>← Prev</button>
+        <button className="next" onClick={() => setIdx(i => Math.min(slides.length - 1, i + 1))} disabled={idx === slides.length - 1}>Next →</button>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+<script id="deck-data" type="application/json">{
+  "title": "Causaly \u00b7 vs BiRAGAS",
+  "subtitle": "Strategic competitive analysis \u00b7 MMXXVI",
+  "slides": [
+    {
+      "id": "c01_cover",
+      "stream": "intro",
+      "color": "#C8A560",
+      "kind": "cover",
+      "kicker": "AYASS BIOSCIENCE \u00b7 STRATEGIC ANALYSIS \u00b7 MMXXVI",
+      "title": "Causaly",
+      "subtitle": "A Deep-Dive Competitive Analysis \u00b7 Side-by-Side with BiRAGAS",
+      "big_number": "$93M",
+      "big_label": "Raised across 5 rounds \u00b7 $60M Series B \u00b7 ICONIQ Growth-led (July 2023) \u00b7 12 of top-20 pharma \u00b7 131 employees \u00b7 London HQ",
+      "narration": "Welcome to the Causaly strategic analysis. The most commercially mature AI-pharma platform that uses the word \"causal\" prominently in its marketing. Causaly is a London-based enterprise platform founded in 2018, raised ninety-three million dollars across five rounds, with a sixty million dollar Series B led by ICONIQ Growth in July 2023. Twelve of the top-twenty global pharma are customers. One hundred thirty-one employees. This deck establishes \u2014 with their own product-page evidence \u2014 that Causaly's \"causal\" is NLP relationship extraction from literature, not causal inference. That distinction is BiRAGAS's single most defensible structural wedge."
+    },
+    {
+      "id": "c02_central_thesis",
+      "stream": "thesis",
+      "color": "#DC2626",
+      "kind": "manifesto",
+      "kicker": "THE CENTRAL THESIS",
+      "title": "Same word. Radically different mathematical objects.",
+      "subtitle": "Causaly's \"causal\" is relationship extraction from text (NLP verb classification: causes / inhibits / regulates / activates / induces / suppresses + directionality + refuting-evidence flag). BiRAGAS's \"causal\" is 5-stage formal causal inference (PC + Granger + MR + do-calculus + Bradford Hill) with CCS scoring on outcome truthfulness.",
+      "narration": "The central thesis of this entire memo. Same word \u2014 \"causal.\" Radically different mathematical objects. Causaly's \"causal\" is relationship extraction from text \u2014 sophisticated NLP over biomedical literature that types relations by the verb authors used: causes, inhibits, regulates, activates, induces, suppresses \u2014 plus directionality and a refuting-evidence flag. Their eight relationship types are sentence-level linguistic relations, not causal-effect estimands. BiRAGAS's \"causal\" is five-stage formal causal inference: PC algorithm plus Granger causality plus Mendelian randomization plus do-calculus plus Bradford Hill scoring \u2014 producing CCS, the Causal Confidence Score, as a quantitative outcome-truthfulness metric."
+    },
+    {
+      "id": "c03_threat_level",
+      "stream": "thesis",
+      "color": "#DC2626",
+      "kind": "stat-grid",
+      "kicker": "THE STAKES",
+      "title": "Causaly owns the word \"causal\" in pharma R&D today.",
+      "body": "BiRAGAS's single most defensible structural wedge is the mathematical depth of the word \"causal\" itself. Once a sophisticated pharma data-science buyer probes for do-calculus, Mendelian randomization, or counterfactual estimation, Causaly has no answer. That probe is the wedge.",
+      "kpis": [
+        {
+          "k": "MED-HIGH",
+          "v": "current threat level"
+        },
+        {
+          "k": "12 of top-20",
+          "v": "pharma penetration"
+        },
+        {
+          "k": "$93M",
+          "v": "capital advantage"
+        },
+        {
+          "k": "4 of 5",
+          "v": "BiRAGAS streams uncontested by Causaly"
+        }
+      ],
+      "narration": "The threat is medium to high. Causaly owns the word \"causal\" in pharma R&D today. They have the budget line, the case studies, the twelve-of-top-twenty pharma footprint, and the brand recognition. But the threat is bounded \u2014 Causaly does not own LDT, CDx, co-development, or wellness streams. Four of BiRAGAS's five revenue streams are completely uncontested. And once any sophisticated pharma data-science buyer probes for do-calculus, Mendelian randomization, or counterfactual estimation, Causaly has no answer. That probe is the wedge."
+    },
+    {
+      "id": "c04_company",
+      "stream": "causaly",
+      "color": "#0EA5E9",
+      "kind": "stat-grid",
+      "kicker": "CAUSALY \u00b7 COMPANY PROFILE",
+      "title": "London-based \u00b7 founded 2018 \u00b7 $93M raised across 5 rounds",
+      "body": "Yiannis Kiachopoulos (CEO) and Artur Saudabayev (CTO) co-founded Causaly in 2018. Headquartered in London with offices in New York and Greece. As of April 2026, 131 employees per Tracxn.",
+      "kpis": [
+        {
+          "k": "2018",
+          "v": "founding year"
+        },
+        {
+          "k": "$93M",
+          "v": "total raised"
+        },
+        {
+          "k": "131",
+          "v": "employees (Apr 2026)"
+        },
+        {
+          "k": "London + NYC + Greece",
+          "v": "office footprint"
+        }
+      ],
+      "narration": "Causaly company profile. Founded in 2018 by Yiannis Kiachopoulos as CEO and Artur Saudabayev as CTO. Headquartered in London with offices in New York and Greece. As of April 2026, the company employs approximately one hundred thirty-one people per Tracxn. The company raised approximately ninety-three million dollars cumulatively across five rounds, with a sixty million dollar Series B led by ICONIQ Growth in July 2023."
+    },
+    {
+      "id": "c05_funding",
+      "stream": "causaly",
+      "color": "#0EA5E9",
+      "kind": "chart",
+      "kicker": "CAUSALY \u00b7 FUNDING + INVESTOR STACK",
+      "title": "$60M Series B led by ICONIQ Growth (July 2023)",
+      "body": "Index Ventures (Carlos Gonzalez-Cadenas) led earlier rounds. Strategic angels include Alex Gorsky (former J&J CEO) and Olivier Pomel (Datadog CEO). Advisors include David M. Lee (J&J Immunology head) and Marcus Schindler (former Novo Nordisk CSO).",
+      "chart": {
+        "type": "bar-h",
+        "title": "Causaly Investor Stack \u2014 $93M Cumulative",
+        "data": [
+          {
+            "label": "ICONIQ Growth (Series B lead)",
+            "value": 60,
+            "color": "#0EA5E9"
+          },
+          {
+            "label": "Index Ventures (early lead)",
+            "value": 40,
+            "color": "#0284C7"
+          },
+          {
+            "label": "Marathon Venture Capital",
+            "value": 25,
+            "color": "#0369A1"
+          },
+          {
+            "label": "EBRD",
+            "value": 20,
+            "color": "#075985"
+          },
+          {
+            "label": "Pentech Ventures",
+            "value": 15,
+            "color": "#0C4A6E"
+          },
+          {
+            "label": "Visionaries Club",
+            "value": 15,
+            "color": "#082F49"
+          },
+          {
+            "label": "Angels (Gorsky, Pomel)",
+            "value": 10,
+            "color": "#C8A560"
+          }
+        ],
+        "unit": ""
+      },
+      "narration": "Funding stack. The sixty million dollar Series B led by ICONIQ Growth closed on July 13, 2023, with general partner Caroline Xie leading the deal. Index Ventures with Carlos Gonzalez-Cadenas led the earlier rounds. Other institutional investors include Marathon Venture Capital, the European Bank for Reconstruction and Development, Pentech Ventures, and Visionaries Club. Notable strategic angels: Alex Gorsky, former Chairman and CEO of Johnson and Johnson, and Olivier Pomel, co-founder and CEO of Datadog. Two prominent pharma advisors: David Lee, Senior VP and Global Head of Immunology at J and J, and Marcus Schindler, former Chief Scientific Officer at Novo Nordisk."
+    },
+    {
+      "id": "c06_customers",
+      "stream": "causaly",
+      "color": "#0EA5E9",
+      "kind": "list",
+      "kicker": "CAUSALY \u00b7 NAMED CUSTOMERS",
+      "title": "12 of top-20 global pharma \u00b7 named accounts disclosed",
+      "body": "Their Series B announcement disclosed 12 of top-20 pharma penetration; the customer logo set has expanded since. FDA is a named customer for clinical evidence validation. ProQR and Innate Pharma are documented case studies.",
+      "bullets": [
+        "Gilead Sciences (named customer \u00b7 TechCrunch confirmed)",
+        "Novo Nordisk (named customer \u00b7 ICONIQ thesis disclosure)",
+        "Regeneron (named customer \u00b7 TechCrunch confirmed)",
+        "Teva \u00b7 UCB \u00b7 Eisai \u00b7 Ipsen \u00b7 Lupin \u00b7 Kyowa Kirin (logos on site)",
+        "L'Or\u00e9al (non-pharma life sciences)",
+        "ProQR Therapeutics (named case study \u2014 Axiomer RNA-editing target ID)",
+        "Innate Pharma (named case study \u2014 systematic target ID)",
+        "Scripps Research (academic logo)",
+        "FDA (regulatory customer \u2014 clinical evidence validation workflow)",
+        "US National Institute of Environmental Health Sciences (NIEHS)"
+      ],
+      "narration": "Named customers. The Series B announcement disclosed twelve of top-twenty pharma penetration. Named in TechCrunch and on Causaly's own marketing: Gilead Sciences. Novo Nordisk. Regeneron. Teva. UCB. Eisai. Ipsen. Lupin. Kyowa Kirin. L'Oreal as a non-pharma life-sciences logo. ProQR Therapeutics with a documented case study on their Axiomer RNA-editing target identification platform. Innate Pharma with a systematic target ID case study. Scripps Research as an academic logo. And critically: FDA is a named customer for clinical evidence validation workflows. The US National Institute of Environmental Health Sciences is also a customer."
+    },
+    {
+      "id": "c07_platform_overview",
+      "stream": "platform",
+      "color": "#3B82F6",
+      "kind": "manifesto",
+      "kicker": "CAUSALY \u00b7 WHAT THE PLATFORM IS",
+      "title": "Knowledge graph + agentic layer + workflow codification",
+      "subtitle": "500M facts. 70M directional relationships across 8 relationship types. 35M scientific documents ingested. 5M custom biomedical concepts. Curated by PhD research scientists. Layered with conversational + multi-agent UI.",
+      "narration": "What the platform is. At the foundation: a proprietary biomedical knowledge graph with five hundred million facts and seventy million directional relationships across eight relationship types \u2014 including directionality and refuting evidence. Five million custom biomedical concepts. Thirty-five million scientific documents ingested from MEDLINE, indexed journals, patents, clinical trials, GWAS catalogs, news, and customer-internal data. Causaly explicitly states: \"the data we ingest is not scraped from the web.\" Curated by PhD research scientists. Layered with a conversational copilot and a multi-agent system."
+    },
+    {
+      "id": "c08_platform_stack",
+      "stream": "platform",
+      "color": "#3B82F6",
+      "kind": "list",
+      "kicker": "CAUSALY \u00b7 AI / ML STACK",
+      "title": "Hybrid: knowledge graph + NLP extraction + generative AI + multi-agent",
+      "body": "The stack has evolved across the agentic AI wave. CEO claims they \"built natural language querying before ChatGPT.\" The specific underlying LLM provider (OpenAI / Anthropic / proprietary) is NOT publicly disclosed.",
+      "bullets": [
+        "Knowledge graph + curated NLP relationship extraction (foundation, pre-LLM)",
+        "Causaly Copilot \u2014 generative AI conversational layer",
+        "SIRS \u2014 Scientific Information Retrieval System (hybrid similarity + graph retrieval, ranked)",
+        "Causaly Discover Agentic Agents (March 31, 2025)",
+        "Causaly Agentic Research \u2014 multi-agent conversational platform (September 16, 2025, GA October 2025)",
+        "Scientific Workflows \u2014 codifies R&D processes into AI-executed workflows (May 28, 2026)",
+        "Enterprise Data Fabric \u2014 private/internal customer data integration"
+      ],
+      "narration": "The AI and ML stack. The foundation is the knowledge graph plus curated NLP relationship extraction \u2014 built before ChatGPT, per the CEO. Layered on top: Causaly Copilot as the generative AI conversational layer. SIRS, the Scientific Information Retrieval System \u2014 hybrid similarity plus graph retrieval with ranking, marketed as the hallucination-safeguarded foundation. Causaly Discover Agentic Agents launched March 31, 2025. Causaly Agentic Research, a multi-agent conversational platform, launched September 2025 and went GA October 2025. Scientific Workflows launched May 2026 \u2014 codifying R and D processes into AI-executed workflows. And Enterprise Data Fabric for private customer data integration. Critically, the specific underlying LLM provider is not publicly disclosed."
+    },
+    {
+      "id": "c09_platform_workflows",
+      "stream": "platform",
+      "color": "#3B82F6",
+      "kind": "table",
+      "kicker": "CAUSALY \u00b7 SUPPORTED WORKFLOWS",
+      "title": "9 publicly documented workflows",
+      "body": "Target identification is the flagship. Newer additions like Pipeline Graph add competitive intelligence. Scientific Workflows codifies existing R&D processes into AI execution \u2014 direct analogue to BiRAGAS's WF-1 through WF-7.",
+      "table": {
+        "title": "Workflow Surface",
+        "headers": [
+          "Workflow",
+          "Description",
+          "BiRAGAS Analogue"
+        ],
+        "rows": [
+          [
+            "Target identification",
+            "Flagship; literature + KG + GWAS filter",
+            "WF-1, WF-2"
+          ],
+          [
+            "Biomarker discovery",
+            "Progression / prediction / survival",
+            "WF-2, WF-3"
+          ],
+          [
+            "Disease pathophysiology",
+            "Map disease mechanisms from literature",
+            "WF-3"
+          ],
+          [
+            "Indication expansion",
+            "Drug repurposing across diseases",
+            "WF-4"
+          ],
+          [
+            "Safety & toxicity",
+            "Clinical-failure mitigation",
+            "WF-5"
+          ],
+          [
+            "Medical affairs",
+            "Research + systematic review",
+            "Adjacent to WF-6"
+          ],
+          [
+            "Competitive intelligence",
+            "Pipeline Graph (June 2025)",
+            "Not in BiRAGAS scope"
+          ],
+          [
+            "Clinical evidence validation",
+            "For FDA submissions",
+            "BiRAGAS BQP path"
+          ],
+          [
+            "Scientific Workflows",
+            "Codify R&D processes (May 2026)",
+            "BiRAGAS WF-1..7"
+          ]
+        ]
+      },
+      "narration": "Nine publicly documented workflows. Target identification is the flagship. Biomarker discovery for progression, prediction, and survival. Disease pathophysiology mapping. Indication expansion for drug repurposing. Safety and toxicity assessment for clinical-failure mitigation. Medical affairs research. Competitive intelligence via Pipeline Graph, launched June 2025. Clinical evidence validation for FDA submissions. And Scientific Workflows, launched May 2026, which codifies R and D processes into AI execution \u2014 a direct analogue to BiRAGAS's WF-one through WF-seven workflows. The workflow taxonomy maps closely to BiRAGAS's own \u2014 the difference is in the depth of evidence inside each workflow."
+    },
+    {
+      "id": "c10_verification",
+      "stream": "platform",
+      "color": "#3B82F6",
+      "kind": "manifesto",
+      "kicker": "CAUSALY \u00b7 VERIFICATION APPROACH",
+      "title": "SIRS = Scientific Information Retrieval System",
+      "subtitle": "Hybrid similarity + graph search with ranking. Outputs \"transparently sourced, cited answers\" grounded in the curated knowledge graph. \"Calibrated by biomedical information specialists.\" No published quantitative hallucination rate, no benchmark score, no third-party validation.",
+      "narration": "Causaly's verification approach. SIRS \u2014 the Scientific Information Retrieval System. Hybrid similarity plus graph-based retrieval with ranking. Outputs transparently sourced, cited answers grounded in the curated knowledge graph rather than free-text LLM generation. Calibrated by biomedical information specialists. Marketed as the anti-hallucination foundation of the agentic platform. But \u2014 no published quantitative hallucination rate. No benchmark score disclosed. No third-party validation cited beyond Causaly's own internal benchmarking whitepaper. The verification is grounded in citation fidelity to the literature, which is excellent but text-bounded."
+    },
+    {
+      "id": "c11_distinction_intro",
+      "stream": "thesis",
+      "color": "#DC2626",
+      "kind": "manifesto",
+      "kicker": "THE CRITICAL DISTINCTION \u00b7 1 OF 5",
+      "title": "Causal inference is not causal language extraction.",
+      "subtitle": "The next four slides establish \u2014 with Causaly's own product-page evidence \u2014 that their \"causal\" is sophisticated NLP relation typing, not interventional or counterfactual causal mathematics.",
+      "narration": "The critical distinction. One of five. Causal inference is not causal language extraction. The next four slides establish, with Causaly's own product page evidence, that their \"causal\" is sophisticated NLP relation typing \u2014 not interventional or counterfactual causal mathematics. This is the central technical thesis. Understanding it correctly is the foundation of every Causaly-adjacent investor conversation BiRAGAS will have."
+    },
+    {
+      "id": "c12_what_causaly_does",
+      "stream": "thesis",
+      "color": "#DC2626",
+      "kind": "manifesto",
+      "kicker": "THE CRITICAL DISTINCTION \u00b7 2 OF 5 \u00b7 WHAT CAUSALY ACTUALLY DOES",
+      "title": "NLP over published literature.",
+      "subtitle": "Their 8 relationship types are sentence-level linguistic relations \u2014 the verbs authors used (causes, inhibits, regulates, activates, induces, suppresses) plus directionality plus a refuting-evidence flag. Sentence relations. Not estimands.",
+      "narration": "What Causaly actually does. NLP over the published literature. Their eight relationship types are sentence-level linguistic relations \u2014 the verbs authors used in their papers: causes, inhibits, regulates, activates, induces, suppresses. Plus directionality. Plus a refuting-evidence flag. These are sentence-level relations extracted from text, not causal-effect estimands derived from data. Sophisticated and useful \u2014 but not the same mathematical object as causal inference."
+    },
+    {
+      "id": "c13_what_causaly_doesnt",
+      "stream": "thesis",
+      "color": "#DC2626",
+      "kind": "list",
+      "kicker": "THE CRITICAL DISTINCTION \u00b7 3 OF 5 \u00b7 WHAT CAUSALY DOES NOT DO",
+      "title": "Verified against every public surface \u00b7 zero mention.",
+      "body": "We searched the Causaly main site, Knowledge Graph page, SIRS page, RA blog post, About page, Series B announcement, TechCrunch coverage, Sifted coverage, ICONIQ thesis, and every product launch announcement. None of these techniques are mentioned anywhere.",
+      "bullets": [
+        "do-calculus (interventional probability under causal graphs)",
+        "counterfactual reasoning",
+        "instrumental variables (genetic or otherwise)",
+        "Mendelian randomization",
+        "treatment effect estimation",
+        "PC algorithm (structure discovery from observational data)",
+        "Granger causality (temporal causal inference)",
+        "Bradford Hill criteria scoring"
+      ],
+      "narration": "What Causaly does NOT do. Verified against every public surface \u2014 main site, Knowledge Graph product page, SIRS page, RA blog post, About page, Series B announcement, TechCrunch coverage, Sifted coverage, ICONIQ thesis, and every product launch announcement. Zero mention of: do-calculus, the interventional probability under causal graphs. Counterfactual reasoning. Instrumental variables, genetic or otherwise. Mendelian randomization. Treatment effect estimation. PC algorithm for structure discovery. Granger causality for temporal inference. Bradford Hill criteria scoring. None of these techniques are mentioned anywhere in Causaly's public materials."
+    },
+    {
+      "id": "c14_their_own_words",
+      "stream": "thesis",
+      "color": "#DC2626",
+      "kind": "manifesto",
+      "kicker": "THE CRITICAL DISTINCTION \u00b7 4 OF 5 \u00b7 CAUSALY'S OWN WORDS",
+      "title": "\"Differentiate between causality and co-occurrence.\"",
+      "subtitle": "Verbatim from the Causaly Knowledge Graph product page: \"differentiate between causality and co-occurrence... factors that directly cause an outcome and those that happen together without a causal link.\" Their own framing acknowledges the distinction exists \u2014 but their mechanism is still NLP relation extraction.",
+      "narration": "Causaly's own framing, verbatim. From the Causaly Knowledge Graph product page: differentiate between causality and co-occurrence... factors that directly cause an outcome and those that happen together without a causal link. Their own words acknowledge the distinction exists. Their own materials frame the goal as distinguishing causation from correlation. But the mechanism is still NLP relation extraction filtered and ranked by curated ontologies \u2014 not interventional or counterfactual mathematics. They're trying to solve the right problem with the wrong toolkit."
+    },
+    {
+      "id": "c15_biragas_depth",
+      "stream": "thesis",
+      "color": "#DC2626",
+      "kind": "table",
+      "kicker": "THE CRITICAL DISTINCTION \u00b7 5 OF 5 \u00b7 BIRAGAS'S MATHEMATICAL DEPTH",
+      "title": "The contrast \u2014 5-stage formal pipeline + CCS + PSI",
+      "body": "When asked \"does X cause Y\" \u2014 Causaly returns sentences from papers where authors wrote \"X causes Y.\" BiRAGAS returns a Causal Confidence Score reflecting interventional + genetic-instrument + temporal evidence under a formal causal estimand.",
+      "table": {
+        "title": "5-Stage Pipeline + 2 Scoring Layers",
+        "headers": [
+          "Technique",
+          "BiRAGAS Use",
+          "Causaly Use"
+        ],
+        "rows": [
+          [
+            "PC algorithm",
+            "Causal structure discovery from observational data",
+            "Not used"
+          ],
+          [
+            "Granger causality",
+            "Temporal causal inference",
+            "Not used"
+          ],
+          [
+            "Mendelian randomization",
+            "Genetic instruments for causal effect estimation",
+            "Not used"
+          ],
+          [
+            "do-calculus",
+            "Interventional probability under causal graphs",
+            "Not used"
+          ],
+          [
+            "Bradford Hill",
+            "Epidemiological causal criteria",
+            "Not used"
+          ],
+          [
+            "CCS scoring",
+            "Quantitative outcome-truthfulness metric",
+            "Citation count + tier flag \u2014 no quantitative truthfulness"
+          ],
+          [
+            "PSI",
+            "Pathway Strength Index \u2014 interventional weighting",
+            "Relation directionality only"
+          ]
+        ]
+      },
+      "narration": "BiRAGAS's mathematical depth. The contrast in five stages plus two scoring layers. PC algorithm for causal structure discovery from observational data \u2014 BiRAGAS uses it, Causaly does not. Granger causality for temporal causal inference \u2014 BiRAGAS uses it, Causaly does not. Mendelian randomization for genetic-instrument causal effect estimation \u2014 BiRAGAS uses it, Causaly does not. Do-calculus for interventional probability under causal graphs \u2014 BiRAGAS uses it, Causaly does not. Bradford Hill criteria \u2014 BiRAGAS uses it, Causaly does not. Plus the Causal Confidence Score as a quantitative outcome-truthfulness metric. Plus PSI, the Pathway Strength Index, with interventional weighting. When asked does X cause Y, Causaly returns sentences from papers where authors wrote X causes Y. BiRAGAS returns a CCS score reflecting interventional plus genetic-instrument plus temporal evidence under a formal causal estimand."
+    },
+    {
+      "id": "c16_ra_blog_setup",
+      "stream": "thesis",
+      "color": "#DC2626",
+      "kind": "manifesto",
+      "kicker": "WORKED EXAMPLE \u00b7 RA BLOG POST",
+      "title": "Rheumatoid Arthritis \u00b7 February 6, 2024",
+      "subtitle": "Causaly's own blog post is the cleanest worked example of the distinction. They run a pathophysiology workflow on RA, surface ~4,000 genes, filter to ~530 with GWAS, identify ERBB3 \u2192 PI3K \u2192 ~150 mediator proteins. The workflow is sophisticated literature triage \u2014 not causal inference.",
+      "narration": "A worked example. The Rheumatoid Arthritis blog post on Causaly's own site is the cleanest demonstration of the distinction. Authored by Anna Tzani, February 6, 2024. They run a pathophysiology workflow on RA, surface approximately four thousand genes and proteins, filter to about five hundred thirty using GWAS as a genetic-evidence overlay, identify ERBB3 as a candidate target, then surface approximately one hundred fifty mediator proteins between ERBB3 and RA \u2014 implicating the PI3K pathway as the downstream mechanism. The visual outputs are timeline, dendrogram, and network views. The workflow is sophisticated literature triage. It is not causal inference."
+    },
+    {
+      "id": "c17_ra_what_they_did",
+      "stream": "thesis",
+      "color": "#DC2626",
+      "kind": "list",
+      "kicker": "RA BLOG \u00b7 WHAT CAUSALY ACTUALLY DID",
+      "title": "The full workflow demonstrated",
+      "bullets": [
+        "Found ~4,000 genes/proteins linked to RA across 23,000+ documents",
+        "Prioritized ~530 of those using GWAS as a genetic-evidence filter",
+        "Identified ERBB3 as a candidate target with \"compelling evidence\"",
+        "Hypothesis-generation tool surfaced ~150 mediating proteins between ERBB3 and RA",
+        "PI3K pathway implicated as ERBB3's downstream mechanism (already known RA target)",
+        "Visual outputs: timeline, dendrogram, network views"
+      ],
+      "narration": "The full workflow. Causaly searched twenty-three thousand documents for RA-associated genes and proteins, surfacing approximately four thousand. They prioritized about five hundred thirty of those using GWAS genetic-evidence as a filter. They identified ERBB3 as a candidate target with compelling evidence. The hypothesis-generation tool surfaced approximately one hundred fifty mediating proteins between ERBB3 and RA. They implicated the PI3K pathway as ERBB3's downstream mechanism \u2014 already a known RA target. The visual outputs were a timeline, a dendrogram, and a network view. Everything in this workflow is sophisticated literature triage with GWAS overlay. None of it is causal inference."
+    },
+    {
+      "id": "c18_biragas_alternative",
+      "stream": "thesis",
+      "color": "#DC2626",
+      "kind": "manifesto",
+      "kicker": "RA BLOG \u00b7 HOW BIRAGAS WOULD APPROACH THE SAME QUESTION",
+      "title": "Same target candidate. Fundamentally different epistemic claim.",
+      "subtitle": "BiRAGAS would return: CCS for ERBB3 \u2192 RA using CRISPR perturbation evidence + Mendelian randomization with eQTL instruments + temporal cohort data. PSI for the ERBB3 \u2192 PI3K \u2192 RA pathway weighted by intervention strength. Confidence intervals on each estimate. Treatment-effect attribution, not literature relation typing.",
+      "narration": "How BiRAGAS would approach the same question. Same target candidate \u2014 ERBB3 for RA. Fundamentally different epistemic claim. BiRAGAS would return: a Causal Confidence Score for ERBB3 to RA using CRISPR perturbation evidence as interventional ground truth, plus Mendelian randomization with eQTL instruments, plus temporal cohort data. A Pathway Strength Index for the ERBB3 to PI3K to RA pathway weighted by intervention strength. Confidence intervals on each estimate. The output is treatment-effect attribution under a formal causal estimand \u2014 not literature relation typing. Same words on the page. Fundamentally different scientific objects underneath."
+    },
+    {
+      "id": "c19_commercial",
+      "stream": "causaly",
+      "color": "#0EA5E9",
+      "kind": "stat-grid",
+      "kicker": "CAUSALY \u00b7 COMMERCIAL MOTION",
+      "title": "Enterprise SaaS \u00b7 multi-year contracts \u00b7 executive-led sales",
+      "body": "Sales motion is enterprise direct with SVP Sales Guilherme Pinheiro leading. No PLG. No disclosed channel partner program. Heavy reliance on case studies and KOL advisors (David Lee from J&J, Marcus Schindler from Novo) for warm enterprise intros.",
+      "kpis": [
+        {
+          "k": "Enterprise SaaS",
+          "v": "multi-year contracts inferred"
+        },
+        {
+          "k": "6-7 figure ACV",
+          "v": "inferred from $93M raised + footprint"
+        },
+        {
+          "k": "London + NYC",
+          "v": "primary commercial footprint"
+        },
+        {
+          "k": "Direct sales",
+          "v": "no PLG \u00b7 no channel"
+        }
+      ],
+      "narration": "Commercial motion. Enterprise SaaS subscription with multi-year contracts inferred. Per-seat licensing the likely default. No public price list. Likely six-to-seven-figure annual contract value based on the ninety-three million raised and the twelve-of-top-twenty footprint and the tripled revenue claim from the Series B announcement. Geographic focus is Europe-anchored with London HQ plus strong US footprint via the New York office, the FDA customer, and the top US pharma penetration. Sales motion is enterprise direct, executive-led by SVP Sales Guilherme Pinheiro. No PLG. No disclosed channel partner program."
+    },
+    {
+      "id": "c20_recent_moves",
+      "stream": "causaly",
+      "color": "#0EA5E9",
+      "kind": "list",
+      "kicker": "CAUSALY \u00b7 RECENT PRODUCT MOVES",
+      "title": "Quarterly cadence \u00b7 agentic AI pivot 2024 \u2192 2026",
+      "body": "Causaly has shipped at a high cadence over 18 months, pivoting from \"biomedical knowledge graph\" branding to \"Agentic AI platform\" branding. This is critical context: they are moving fast.",
+      "bullets": [
+        "March 31, 2025 \u2014 Causaly Discover agentic AI agents announced",
+        "May 2025 \u2014 Causaly Discover GA",
+        "June 24, 2025 \u2014 Pipeline Graph launched (competitive intelligence)",
+        "September 16, 2025 \u2014 Causaly Agentic Research announced (multi-agent, conversational)",
+        "October 2025 \u2014 Causaly Agentic Research GA",
+        "May 28, 2026 \u2014 Scientific Workflows launched (codifies R&D processes)",
+        "June 17, 2026 \u2014 Webinar: \"Automate Your Research Workflows\"",
+        "Ongoing \u2014 Featured collaboration with Dr. Siddhartha Mukherjee / Manas AI"
+      ],
+      "narration": "Recent product moves. Quarterly cadence. Agentic AI pivot from 2024 through 2026. March 31, 2025: Causaly Discover agentic AI agents announced in early access. May 2025: Causaly Discover went GA. June 24, 2025: Pipeline Graph launched for competitive intelligence. September 16, 2025: Causaly Agentic Research announced as multi-agent conversational platform. October 2025: Causaly Agentic Research GA. May 28, 2026: Scientific Workflows launched, codifying R and D processes into AI execution. June 17, 2026: webinar on automating research workflows. Ongoing: featured collaboration with Doctor Siddhartha Mukherjee and Manas AI on agentic AI thought leadership. Causaly is moving fast."
+    },
+    {
+      "id": "c21_positioning",
+      "stream": "causaly",
+      "color": "#0EA5E9",
+      "kind": "manifesto",
+      "kicker": "CAUSALY \u00b7 SELF-POSITIONING",
+      "title": "\"The Agentic AI Platform for Life Sciences.\"",
+      "subtitle": "Positions against (a) manual literature triage, (b) generic LLM and ChatGPT, and (c) \"fragmented tools, manual effort, and outdated databases.\" Emphasis on transparency, citation fidelity, and \"hallucination-safeguarded\" answers. Brand pivoted from \"biomedical knowledge graph\" (2023) to \"Agentic AI platform\" (2025) to ride the agentic wave.",
+      "narration": "Causaly's self-positioning. Verbatim: the Agentic AI Platform for Life Sciences. Science-grade AI for R and D. They position against manual literature triage, against generic large-language models like ChatGPT, and against what they call fragmented tools, manual effort, and outdated databases. The emphasis is on transparency, citation fidelity, and hallucination-safeguarded answers. The brand pivoted from biomedical knowledge graph in 2023 to Agentic AI platform in 2025 \u2014 riding the agentic wave at the right moment commercially."
+    },
+    {
+      "id": "c22_overlap",
+      "stream": "compare",
+      "color": "#10B981",
+      "kind": "list",
+      "kicker": "HEAD-TO-HEAD \u00b7 OVERLAP",
+      "title": "Where both companies play",
+      "bullets": [
+        "Life-sciences R&D (target ID, biomarker, MoA, repurposing)",
+        "Biomedical literature ingestion into knowledge / vector substrate",
+        "\"Hallucination-safe\" grounded retrieval marketing",
+        "Significant time-savings vs manual literature triage",
+        "Enterprise pharma as primary buyer",
+        "Agentic / workflow framing (Causaly Scientific Workflows \u2194 BiRAGAS WF-1..7)",
+        "Custom biomedical ontologies"
+      ],
+      "narration": "Head-to-head. Where both companies play. Life-sciences R and D including target identification, biomarker discovery, mechanism of action, and drug repurposing. Both ingest biomedical literature into a knowledge or vector substrate. Both market hallucination-safe grounded retrieval. Both pitch significant time-savings versus manual literature triage. Both serve enterprise pharma as primary buyer. Both have agentic and workflow framing \u2014 Causaly's Scientific Workflows correspond to BiRAGAS's WF-one through WF-seven. Both maintain custom biomedical ontologies. The overlap is genuine \u2014 they call on the same buyer with adjacent value propositions."
+    },
+    {
+      "id": "c23_biragas_wins_1",
+      "stream": "compare",
+      "color": "#10B981",
+      "kind": "table",
+      "kicker": "BIRAGAS WINS \u00b7 DIMENSIONS 1-4",
+      "title": "Causal layer \u00b7 Substrate \u00b7 Regulatory \u00b7 IP",
+      "table": {
+        "title": "BiRAGAS Wins \u00b7 1-4",
+        "headers": [
+          "Dimension",
+          "BiRAGAS",
+          "Causaly"
+        ],
+        "rows": [
+          [
+            "Causal inference vs extraction",
+            "5-stage formal pipeline (PC + Granger + MR + do-calculus + Bradford Hill) + CCS / PSI quantitative outcome-truthfulness scoring",
+            "NLP relation-typing over sentences. No do-calculus. No counterfactual. No MR."
+          ],
+          [
+            "Multi-modal substrate",
+            "4 modalities + 88.9B CRISPR perturbations + 8.6M Bio-RAG vectors + 837 modules",
+            "Literature/patent/trials/news text + KG (500M facts). No perturbational substrate."
+          ],
+          [
+            "Regulatory posture",
+            "FDA Biomarker Qualification Program engagement + CDx 21 CFR \u00a7809.40 + Breakthrough Device",
+            "FDA as customer (research tools). NO BQP. NO CDx. NO Breakthrough Device."
+          ],
+          [
+            "IP defensibility",
+            "18 patent categories CAT-00..17 + trade-secret + biomarker layers",
+            "No public patent portfolio. Defensibility = curated ontologies + KG accumulation."
+          ]
+        ]
+      },
+      "narration": "Where BiRAGAS wins, dimensions one through four. Causal inference versus extraction \u2014 BiRAGAS runs a five-stage formal pipeline; Causaly does NLP relation typing. Multi-modal substrate \u2014 BiRAGAS has four modalities plus eighty-eight point nine billion CRISPR perturbations plus eight point six million Bio-RAG vectors plus eight hundred thirty-seven modules; Causaly has literature plus patents plus trials plus news plus a knowledge graph with five hundred million facts, but no perturbational substrate. Regulatory posture \u2014 BiRAGAS has active FDA Biomarker Qualification Program engagement, CDx co-approval, and Breakthrough Device strategy; Causaly has the FDA as a customer for research-tools purposes but no BQP, no CDx, no Breakthrough Device. IP defensibility \u2014 BiRAGAS has eighteen patent categories; Causaly has no public patent portfolio."
+    },
+    {
+      "id": "c24_biragas_wins_2",
+      "stream": "compare",
+      "color": "#10B981",
+      "kind": "table",
+      "kicker": "BIRAGAS WINS \u00b7 DIMENSIONS 5-7",
+      "title": "Revenue diversification \u00b7 Hallucination shield \u00b7 Outcome truthfulness",
+      "table": {
+        "title": "BiRAGAS Wins \u00b7 5-7",
+        "headers": [
+          "Dimension",
+          "BiRAGAS",
+          "Causaly"
+        ],
+        "rows": [
+          [
+            "Revenue diversification",
+            "5 streams: SaaS + Co-Dev + LDT + Wellness ($90K UHNW) + CDx royalty \u2192 $618.8M 2030 base",
+            "Single-stream enterprise SaaS. No LDT, no co-development, no royalty, no consumer/wellness."
+          ],
+          [
+            "Hallucination shield",
+            "4-layer causal framework + multi-evidence validation tied to molecular ground truth",
+            "SIRS = hybrid similarity+graph retrieval with citation grounding to literature. Still text-bounded."
+          ],
+          [
+            "Outcome truthfulness",
+            "CCS (quantitative outcome-truthfulness metric) + PSI",
+            "Citation count + tier flag. No quantitative truthfulness score."
+          ]
+        ]
+      },
+      "narration": "Where BiRAGAS wins, dimensions five through seven. Revenue diversification \u2014 BiRAGAS has five streams: SaaS plus Co-Dev plus LDT plus Wellness at ninety-thousand UHNW plus CDx royalty, totaling six hundred eighteen point eight million 2030 base case. Causaly is single-stream enterprise SaaS. Four of BiRAGAS's five streams are completely uncontested by Causaly. Hallucination shield mechanism \u2014 BiRAGAS has a four-layer causal framework plus multi-evidence validation tied to molecular ground truth. Causaly's SIRS is hybrid similarity-plus-graph retrieval with citation grounding to literature \u2014 excellent, but still text-bounded with no molecular ground-truth check. Outcome truthfulness \u2014 BiRAGAS has CCS as a quantitative outcome-truthfulness metric. Causaly has citation count plus a tier flag, but no quantitative truthfulness score."
+    },
+    {
+      "id": "c25_causaly_wins",
+      "stream": "compare",
+      "color": "#10B981",
+      "kind": "table",
+      "kicker": "CAUSALY WINS \u00b7 6 DIMENSIONS",
+      "title": "All commercial \u00b7 all closeable by BiRAGAS execution",
+      "body": "Causaly leads in commercial maturity, brand, and distribution today. None of these are durable technical moats. All can be closed by BiRAGAS executing on its causal-infrastructure wedge with the right capital.",
+      "table": {
+        "title": "Causaly Wins \u00b7 1-6",
+        "headers": [
+          "Dimension",
+          "BiRAGAS",
+          "Causaly"
+        ],
+        "rows": [
+          [
+            "Commercial proof",
+            "Pre-revenue / early commercial \u00b7 PPM Units in BiRAGAS Inc.",
+            "12 of top-20 pharma \u00b7 $93M raised \u00b7 ICONIQ-backed \u00b7 tripled revenue \u00b7 named accounts"
+          ],
+          [
+            "Brand & GTM motion",
+            "Building",
+            "Established enterprise sales org \u00b7 SVP Sales/Marketing \u00b7 case studies \u00b7 12-of-top-20 footprint"
+          ],
+          [
+            "Agentic UX maturity",
+            "WF-1..7 framework",
+            "4 product launches in 18 months \u00b7 multi-agent UI in production"
+          ],
+          [
+            "Strategic relationships",
+            "ATLAS group + Bryan Reynolds outreach",
+            "Alex Gorsky (ex-J&J CEO) angel \u00b7 David Lee (J&J Immunology) advisor \u00b7 Marcus Schindler (ex-Novo CSO) advisor \u00b7 ICONIQ + Index"
+          ],
+          [
+            "Competitive intelligence integration",
+            "Not a stated focus",
+            "Pipeline Graph embeds CI into preclinical workflow"
+          ],
+          [
+            "Time-to-value perception",
+            "Deep but technical \u00b7 longer eval cycle",
+            "Demoable in minutes \u00b7 \"90% time savings\" headline lands fast"
+          ]
+        ]
+      },
+      "narration": "Where Causaly wins. Six dimensions \u2014 all commercial, all distribution-driven, all closeable by BiRAGAS execution. Commercial proof \u2014 Causaly has twelve of top-twenty pharma, ninety-three million raised, ICONIQ-backed, tripled revenue, named accounts. BiRAGAS is pre-revenue with the PPM Units. Brand and GTM motion \u2014 Causaly has an established enterprise sales organization with SVP Sales and SVP Marketing roles, dedicated case studies, twelve-of-top-twenty pharma footprint. BiRAGAS is building. Agentic UX maturity \u2014 Causaly shipped four major product launches in eighteen months with multi-agent UI in production. BiRAGAS has the WF-one through WF-seven framework. Strategic relationships \u2014 Alex Gorsky as angel, David Lee from J and J immunology as advisor, Marcus Schindler from Novo Nordisk as advisor, ICONIQ plus Index Ventures syndicate. Competitive intelligence integration \u2014 Causaly's Pipeline Graph specifically embeds CI into the preclinical workflow. Time-to-value perception \u2014 Causaly is demoable in minutes; the ninety-percent-time-savings headline lands fast in pharma procurement."
+    },
+    {
+      "id": "c26_partnership",
+      "stream": "compare",
+      "color": "#10B981",
+      "kind": "manifesto",
+      "kicker": "PARTNERSHIP POTENTIAL",
+      "title": "BiRAGAS as the causal-validation engine on top of any KG.",
+      "subtitle": "Causaly's KG is excellent for surfacing candidate hypotheses from literature. BiRAGAS's CCS/PSI is excellent for scoring those candidates with perturbation + MR + do-calculus evidence. Frame BiRAGAS as the layer that COMPLETES what Causaly's KG starts. Same language (\"causal\"), different mathematical depth.",
+      "narration": "Partnership potential. Moderate to high and complementary. Causaly is a literature-grounded relationship and knowledge graph layer. BiRAGAS is a causal-inference plus perturbational layer producing outcome-truthfulness scoring. The natural integration: Causaly surfaces candidate gene and pathway hypotheses from literature. BiRAGAS scores each candidate with CCS and PSI using CRISPR plus Mendelian randomization plus do-calculus evidence. The output is a ranked, causality-validated short list. Causaly could OEM BiRAGAS CCS as their causal validation layer. BiRAGAS could OEM Causaly's KG as a literature evidence layer. Frame BiRAGAS as the layer that completes what Causaly's KG starts. Same language \u2014 causal \u2014 different mathematical depth."
+    },
+    {
+      "id": "c27_threat",
+      "stream": "threat",
+      "color": "#EF4444",
+      "kind": "stat-grid",
+      "kicker": "THREAT ASSESSMENT",
+      "title": "MEDIUM-HIGH \u00b7 bounded by 4 structural limits",
+      "body": "Causaly is the primary \"why not just use Causaly?\" objection in BiRAGAS SaaS deals. But the threat is bounded by structural limits Causaly cannot easily close.",
+      "kpis": [
+        {
+          "k": "MED-HIGH",
+          "v": "current level"
+        },
+        {
+          "k": "4 of 5 streams",
+          "v": "BiRAGAS streams uncontested"
+        },
+        {
+          "k": "0 mentions",
+          "v": "of do-calculus / MR / counterfactual in Causaly materials"
+        },
+        {
+          "k": "Research tools",
+          "v": "Causaly posture (not regulated product)"
+        }
+      ],
+      "narration": "Threat assessment. Medium to high. Causaly owns buyer mindshare and the budget line and the word causal inside pharma R and D today. Ninety-three million raised, one hundred thirty-one employees, twelve-of-top-twenty pharma penetration, shipping agentic UI quarterly. For BiRAGAS's SaaS stream, Causaly is the incumbent procurement will name first. But the threat is bounded by four structural limits. One: Causaly does not do causal inference in the mathematical sense. Two: Causaly does not own LDT, CDx, co-development, or wellness \u2014 four of five BiRAGAS streams uncontested. Three: Causaly has no regulatory product posture \u2014 no BQP, no Breakthrough Device, no CDx. Four: Causaly is a research-tools company; BiRAGAS is a causal-OS plus biomarker plus diagnostic plus therapeutic-co-development company."
+    },
+    {
+      "id": "c28_watchlist",
+      "stream": "threat",
+      "color": "#EF4444",
+      "kind": "list",
+      "kicker": "WATCH-LIST \u00b7 ESCALATION TRIGGERS",
+      "title": "Events that escalate Causaly from MED-HIGH to HIGH",
+      "body": "Track monthly. Single biggest trigger: any Causaly executive publicly using \"do-calculus,\" \"counterfactual,\" or \"instrumental variable\" language \u2014 that's the canary.",
+      "bullets": [
+        "Causaly hires a causal-inference / biostatistics / MR lead",
+        "Causaly partners with or acquires a perturbational-screen company (Recursion / Insitro / Cellarity)",
+        "Causaly publishes peer-reviewed validation with formal estimand + benchmark",
+        "Causaly enters CDx, LDT, or regulated-biomarker category",
+        "Causaly raises Series C with revenue >$150M ARR",
+        "Causaly co-launches with FDA on any biomarker qualification or guidance",
+        "Causaly integrates GWAS / CRISPR / multi-omic substrates beyond literature",
+        "Pharma-internal RAG stacks reach feature parity with Causaly Discover (commoditization)",
+        "Any Causaly executive uses \"counterfactual,\" \"do-calculus,\" or \"instrumental variable\" publicly"
+      ],
+      "narration": "Watch list. Escalation triggers. Track monthly. Single biggest trigger to escalate Causaly from MED-HIGH to HIGH: any Causaly executive publicly using do-calculus, counterfactual, or instrumental variable language \u2014 that is the canary. Other triggers: Causaly hires a causal-inference or biostatistics or Mendelian-randomization lead. Causaly partners with or acquires a perturbational-screen company like Recursion or Insitro or Cellarity. Causaly publishes peer-reviewed validation with a formal estimand and benchmark. Causaly enters CDx, LDT, or regulated-biomarker category. Causaly raises Series C with revenue over one hundred fifty million ARR. Causaly co-launches with FDA on any biomarker qualification or guidance. Causaly integrates GWAS or CRISPR or multi-omic substrates beyond literature. Pharma-internal RAG stacks reach feature parity with Causaly Discover."
+    },
+    {
+      "id": "c29_posture_1",
+      "stream": "close",
+      "color": "#1E40AF",
+      "kind": "manifesto",
+      "kicker": "POSTURE 1 OF 4",
+      "title": "Lead with the inference-vs-extraction distinction in every Causaly-adjacent conversation.",
+      "subtitle": "BiRAGAS's most defensible wedge is mathematical depth on the word \"causal.\" Open every comparison with the distinction. Same word, radically different mathematical object. Once a sophisticated buyer hears \"do-calculus\" vs \"NLP verb classification,\" the comparison resolves in BiRAGAS's favor.",
+      "narration": "Posture one of four. Lead with the inference-versus-extraction distinction in every Causaly-adjacent conversation. BiRAGAS's most defensible wedge is mathematical depth on the word causal. Open every comparison with the distinction. Same word, radically different mathematical object. Once a sophisticated buyer hears do-calculus versus NLP verb classification, the comparison resolves in BiRAGAS's favor. This is the technical talking point that turns every Causaly-comparison conversation from defensive to offensive."
+    },
+    {
+      "id": "c30_posture_2_3",
+      "stream": "close",
+      "color": "#1E40AF",
+      "kind": "manifesto",
+      "kicker": "POSTURE 2 + 3 OF 4",
+      "title": "Anchor on the 4 streams Causaly does NOT play in. Engineer the \"BiRAGAS as causal-validation engine on top of any KG\" narrative.",
+      "subtitle": "Posture 2: LDT, CDx, Co-Dev, Wellness ($90K UHNW) are 100% uncontested. Foreground in every investor pitch. Posture 3: frame BiRAGAS as the layer that COMPLETES what Causaly's KG starts \u2014 technically defensible AND commercially constructive (opens partnership conversations rather than closing them).",
+      "narration": "Postures two and three. Anchor on the four streams Causaly does not play in \u2014 LDT, CDx, Co-Dev, and Wellness. These are completely uncontested. Foreground them in every investor pitch to neutralize the why-not-just-use-Causaly objection. And engineer the BiRAGAS-as-causal-validation-engine narrative. Frame BiRAGAS as the layer that completes what Causaly's KG starts. This framing is technically defensible \u2014 the layers do solve different problems. And commercially constructive \u2014 it opens partnership conversations rather than closing them. The worst outcome is fighting Causaly head-on for the same SaaS budget. The best outcome is being the layer underneath that makes their output trustworthy."
+    },
+    {
+      "id": "c31_close",
+      "stream": "close",
+      "color": "#1E40AF",
+      "kind": "cover",
+      "kicker": "MEMO ENDS \u00b7 MMXXVI",
+      "title": "Same word. Radically different mathematical object.",
+      "subtitle": "Causaly is the primary \"why not just use Causaly?\" objection. The answer is technical: their \"causal\" is NLP relation extraction. BiRAGAS's \"causal\" is formal causal inference. Once a sophisticated buyer hears the difference, the conversation resolves.",
+      "big_number": "MED-HIGH",
+      "big_label": "threat level \u00b7 bounded by 4 structural limits \u00b7 track watch-list monthly \u00b7 single biggest escalation trigger: \"do-calculus\" or \"counterfactual\" appearing in Causaly executive language",
+      "narration": "Memo ends. Same word \u2014 causal \u2014 radically different mathematical object. Causaly is the primary why-not-just-use-Causaly objection BiRAGAS faces in SaaS conversations. The answer is technical and clean: their causal is NLP relation extraction over literature; BiRAGAS's causal is formal causal inference with do-calculus, Mendelian randomization, and outcome-truthfulness scoring. Once a sophisticated buyer hears the difference, the conversation resolves in BiRAGAS's favor. The threat is medium to high today, bounded by four structural limits, with explicit watch-list triggers. The escalation canary is any Causaly executive publicly using do-calculus or counterfactual language. Until that canary chirps, BiRAGAS's structural wedge is intact."
+    }
+  ]
+}</script>
+<script>
+(function() {
+  const el = document.getElementById("deck-data");
+  if (el) { try { window.__DECK_DATA__ = JSON.parse(el.textContent); } catch(e) { console.error(e); } }
+})();
+</script>
+</body>
+</html>
